@@ -1,0 +1,780 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  
+
+    <link rel="apple-touch-icon" type="image/png" href="https://cpwebassets.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png">
+
+    <meta name="apple-mobile-web-app-title" content="CodePen">
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico">
+
+    <link rel="mask-icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-b4b4269c16397ad2f0f7a01bcdf513a1994f4c94b8af2f191c09eb0d601762b1.svg" color="#111">
+
+
+
+  
+    <script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
+
+
+  <title>CodePen - Advanced Image Gallery</title>
+
+    <link rel="canonical" href="https://codepen.io/DerkJanS/pen/mrNwrW">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.0/css/swiper.min.css">
+  
+<style>
+*,
+*:after,
+*:before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  min-height: 100vh;
+}
+
+html {
+  background-color: #FFF;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  color: #444;
+  background-attachment: fixed;
+  font-family: "Noto Sans", sans-serif;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.container {
+  margin: auto;
+  padding: 25px 0;
+  max-width: 1025px;
+}
+
+article {
+  padding: 15px 0;
+}
+h1, h2, p {
+  margin-bottom: 15px;
+}
+h1, h2 {
+  line-height: 1em;
+}
+.center {
+  text-align: center;
+}
+h2.subtitle {
+  font-size: inherit;
+  font-style: italic;
+  font-weight: normal;
+}
+span.keyboard-key {
+  background: #EFF0F2;
+  margin: 0 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border-top: 1px solid #F5F5F5;
+  box-shadow: inset 0 0 25px #E8E8E8, 0 1px 0 #C3C3C3, 0 2px 0 #C9C9C9, 0 2px 3px #333;
+  line-height: 23px;
+  font-family: "Arial", sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 0px 1px 0px #F5F5F5;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+.swiper-container,
+.swiper-container * {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.swiper-container .swiper-no-swiping .swiper-button-prev,
+.swiper-container .swiper-no-swiping .swiper-button-next {
+  opacity: 0;
+}
+.swiper-button-next.swiper-button-disabled,
+.swiper-button-prev.swiper-button-disabled {
+  opacity: .1;
+}
+
+.product-gallery .product-photos-side,
+.product-gallery .product-photo-main {
+  position: relative;
+}
+
+.product-gallery .product-photo-main {
+  margin-bottom: 30px;
+}
+
+.product-gallery .product-photos-side .swiper-container {
+  height: 70px;
+}
+
+.product-gallery .product-photo-main .swiper-container {
+  height: 320px;
+}
+
+.product-gallery .product-photos-side .swiper-slide {
+  width: 70px;
+  opacity: .4;
+  transition: 225ms opacity ease-in-out;
+}
+
+.product-gallery .product-photos-side .swiper-slide.swiper-slide-active {
+  opacity: 1;
+}
+
+.product-gallery .swiper-container {
+  position: static;
+  width: 100%;
+}
+
+.product-gallery .swiper-slide {
+  cursor: pointer;
+  text-align: center;
+}
+
+.product-gallery img {
+  max-height: 100%;
+  max-width: 100%;
+}
+/* full screen product gallery */
+
+.product-gallery-full-screen {
+  position: fixed;
+  background: #000;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  width: 100vw;
+  opacity: 0;
+  pointer-events: none;
+  overflow-y: auto;
+  z-index: 999999;
+  transition: 350ms opacity ease-in-out;
+}
+
+.product-gallery-full-screen.opened {
+  opacity: 1;
+  overflow-y: scroll;
+  pointer-events: auto;
+}
+
+.product-gallery-full-screen .swiper-container {
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.product-gallery-full-screen .swiper-slide {
+  overflow: hidden;
+}
+
+.product-gallery-full-screen .swiper-slide img,
+.product-photos-side .swiper-slide img {
+  max-height: 100%;
+  max-width: 100%;
+}
+.product-gallery-full-screen .swiper-slide img {
+  cursor: zoom-in;
+  transition: 350ms -webkit-transform ease-in-out, 350ms transform ease-in-out;
+}
+
+.product-gallery-full-screen .swiper-button-prev,
+.product-gallery-full-screen .swiper-button-next {
+  background: rgba(0, 0, 0, .4);
+  color: #aaa;
+  transition:
+    250ms opacity ease-in-out,
+    150ms color ease-in-out;
+}
+body:not(:hover) .product-gallery-full-screen .swiper-button-prev,
+body:not(:hover) .product-gallery-full-screen .swiper-button-next {
+  opacity: 0;
+  transition-delay: 1000ms;
+}
+body:hover .product-gallery-full-screen .swiper-button-prev,
+body:hover .product-gallery-full-screen .swiper-button-next {
+  transition-delay: 0ms;
+}
+
+.product-gallery-full-screen .swiper-button-prev:hover,
+.product-gallery-full-screen .swiper-button-next:hover {
+  color: #fff;
+}
+
+.product-gallery-full-screen .swiper-button-prev svg,
+.product-gallery-full-screen .swiper-button-next svg {
+  position: absolute;
+  fill: currentColor;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.gallery-nav {
+  position: absolute;
+  background: rgba(0, 0, 0, 1);
+  color: #aaa;
+  padding: 10px 15px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  transition:
+    250ms opacity ease-in-out;
+}
+body:not(:hover) .gallery-nav {
+  opacity: 0;
+  transition-delay: 1000ms;
+}
+body:hover .gallery-nav {
+  opacity: .65;
+  transition-delay: 0ms;
+}
+
+.gallery-nav ul,
+.gallery-nav li {
+  list-style: none;
+}
+
+.gallery-nav ul {
+  float: right;
+}
+
+.gallery-nav li {
+  float: left;
+  color: #aaa;
+  cursor: pointer;
+  margin-left: 15px;
+  transition: 150ms color ease-in-out;
+}
+
+.gallery-nav li:hover {
+  color: #fff;
+}
+
+.gallery-nav svg {
+  display: block;
+  fill: currentColor;
+  height: 24px;
+  width: 24px;
+}
+
+.gallery-nav .zoom.zoom-out svg.zoom-icon-zoom-in {
+  display: none;
+}
+.gallery-nav .zoom svg.zoom-icon-zoom-out {
+  display: none;
+}
+.gallery-nav .zoom.zoom-out svg.zoom-icon-zoom-out {
+  display: block;
+}
+
+.gallery-nav .fullscreen.leavefs svg.fs-icon {
+  display: none;
+}
+
+.gallery-nav .fullscreen svg.fs-icon-exit {
+  display: none;
+}
+
+.gallery-nav .fullscreen.leavefs svg.fs-icon-exit {
+  display: block;
+}
+
+.gallery-nav .swiper-pagination {
+  position: static;
+  float: left;
+  width: auto;
+  line-height: 24px;
+}
+
+@media (max-width: 1025px) {
+  article {
+    display: none;
+  }
+  .container {
+    padding: 0;
+  }
+}
+</style>
+
+  <script>
+  window.console = window.console || function(t) {};
+</script>
+
+  
+  
+</head>
+
+<body translate="no" style="overflow: auto;">
+  <div class="main" style="overflow-y: auto;">
+  <div class="container">
+    <article>
+      <h1 class="center">Advanced Image Gallery</h1>
+      <h2 class="subtitle center">using jQuery, Swiper.js and fullscreen repository</h2>
+      <br>
+      <p>Swipe or click an image in the bottom row, or click one of the pagination bullets to navigate. Click the larger image to open the larger image gallery. In the larger image gallery: click an image to zoom in or out. Click the icons in the navigation bar to zoom, close or even go fullscreen.</p>
+      <br>
+    </article>
+    <div class="product-gallery">
+      <div class="product-photo-main">
+        <div class="swiper-container swiper-container-horizontal">
+          <div class="swiper-wrapper" style="transform: translate3d(-4100px, 0px, 0px); transition-duration: 0ms;">
+            <div class="swiper-slide" style="width: 1025px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1593642634367-d91a135587b5?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2969&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="width: 1025px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1637077147282-afe85012f74d?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2972&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="width: 1025px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642201354374-babb85ebe375?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=950&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide swiper-slide-prev" style="width: 1025px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1553272725-086100aecf5e?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=930&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide swiper-slide-active" style="width: 1025px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642247649628-12457a06cb1a?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=928&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide swiper-slide-next" style="width: 1025px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642333943577-e043283363b5?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=3164&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="width: 1025px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2969&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="width: 1025px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642336011721-9dd962c38fb4?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=3164&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="width: 1025px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642339572217-ae98faf72127?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2888&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="width: 1025px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642286423481-6fa838052bfb?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2912&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="width: 1025px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1593642634524-b40b5baae6bb?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2064&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="width: 1025px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642270538682-2e97f1d5f4bf?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=3088&amp;q=80">
+              </div>
+            </div>
+          </div>
+          <div class="swiper-pagination swiper-pagination-clickable swiper-pagination-bullets"><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet swiper-pagination-bullet-active"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span></div>
+        </div>
+      </div>
+      <div class="product-photos-side">
+        <div class="swiper-container swiper-container-horizontal">
+          <div class="swiper-wrapper" style="transform: translate3d(77.5px, 0px, 0px); transition-duration: 0ms;">
+            <div class="swiper-slide" style="margin-right: 30px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1593642634367-d91a135587b5?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2969&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="margin-right: 30px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1637077147282-afe85012f74d?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2972&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="margin-right: 30px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642201354374-babb85ebe375?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=950&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide swiper-slide-prev" style="margin-right: 30px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1553272725-086100aecf5e?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=930&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide swiper-slide-active" style="margin-right: 30px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642247649628-12457a06cb1a?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=928&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide swiper-slide-next" style="margin-right: 30px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642333943577-e043283363b5?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=3164&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="margin-right: 30px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2969&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="margin-right: 30px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642336011721-9dd962c38fb4?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=3164&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="margin-right: 30px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642339572217-ae98faf72127?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2888&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="margin-right: 30px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642286423481-6fa838052bfb?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2912&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="margin-right: 30px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1593642634524-b40b5baae6bb?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2064&amp;q=80">
+              </div>
+            </div>
+            <div class="swiper-slide" style="margin-right: 30px;">
+              <div class="swiper-zoom-container">
+                <img src="https://images.unsplash.com/photo-1642270538682-2e97f1d5f4bf?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=3088&amp;q=80">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <article>
+      <br>
+      <br>
+      <p><strong>Note (currently disabled):</strong> you can also use your keyboard (<span class="keyboard-key">arrow keys</span>, <span class="keyboard-key">spacebar</span>, <span class="keyboard-key">enter</span> and <span class="keyboard-key">escape</span>) to navigate, zoom and open/close the larger image gallery.</p>
+      <br>
+      <p>
+        <strong>External sources:</strong>
+        </p><ul>
+          <li>
+            <a href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.0/css/swiper.min.css">swiper.min.css</a>
+          </li>
+          <li>
+            <a href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js">jquery 3.1.0</a>
+          </li>
+          <li>
+            <a href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.0/js/swiper.min.js">swiper.min.js</a>
+          </li>
+        </ul>
+      <p></p>
+      <br>
+      <br>
+      <h2>Known issues:</h2>
+      <h2 class="subtitle">if you have found a way to fix some errors, please link your forked pen in a comment.</h2>
+      <br>
+      <p><strong>Bug #1</strong> - after sliding using the mouse, keyboard navigation might not working correctly (fix: set keyboardControl to false).</p>
+      <p><strong>Bug #2</strong> - when navigating <strong>and</strong> zooming in the larger image gallery, the keyboard navigation doesn't work correctly with the smaller sliders (fix: set keyboardControl to false).</p>
+      <p><strong>Bug #3</strong> - when setting loop to true, inside the swiper options, the swiper.params.control won't be able to synchronize with the other swipers.</p>
+      <p><strong>Bug #4</strong> - Not <strong>fully</strong> supported in IE.</p>
+      <p><strong>Bug #5</strong> - When you click on a bullet pagination twice in a short time, the slider will freeze and needs a swipe before it works normal again (fix: set clickablePagination to false).</p>
+    </article>
+  </div>
+</div>
+<div class="product-gallery-full-screen" style="overflow-y: scroll;">
+  <div class="swiper-container gallery-top swiper-container-horizontal">
+    <div class="swiper-wrapper" style="transform: translate3d(-5280px, 0px, 0px); transition-duration: 0ms;">
+      <div class="swiper-slide" style="width: 1310px; margin-right: 10px;">
+        <div class="swiper-zoom-container">
+          <img src="https://images.unsplash.com/photo-1593642634367-d91a135587b5?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2969&amp;q=80" draggable="false" ondragstart="return false;">
+        </div>
+      </div>
+      <div class="swiper-slide" style="width: 1310px; margin-right: 10px;">
+        <div class="swiper-zoom-container">
+          <img src="https://images.unsplash.com/photo-1637077147282-afe85012f74d?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2972&amp;q=80" draggable="false" ondragstart="return false;">
+        </div>
+      </div>
+      <div class="swiper-slide" style="width: 1310px; margin-right: 10px;">
+        <div class="swiper-zoom-container">
+          <img src="https://images.unsplash.com/photo-1642201354374-babb85ebe375?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=950&amp;q=80" draggable="false" ondragstart="return false;">
+        </div>
+      </div>
+      <div class="swiper-slide swiper-slide-prev" style="width: 1310px; margin-right: 10px;">
+        <div class="swiper-zoom-container">
+          <img src="https://images.unsplash.com/photo-1553272725-086100aecf5e?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=930&amp;q=80" draggable="false" ondragstart="return false;">
+        </div>
+      </div>
+      <div class="swiper-slide swiper-slide-active" style="width: 1310px; margin-right: 10px;">
+        <div class="swiper-zoom-container">
+          <img src="https://images.unsplash.com/photo-1642247649628-12457a06cb1a?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=928&amp;q=80" draggable="false" ondragstart="return false;">
+        </div>
+      </div>
+      <div class="swiper-slide swiper-slide-next" style="width: 1310px; margin-right: 10px;">
+        <div class="swiper-zoom-container">
+          <img src="https://images.unsplash.com/photo-1642333943577-e043283363b5?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=3164&amp;q=80" draggable="false" ondragstart="return false;">
+        </div>
+      </div>
+      <div class="swiper-slide" style="width: 1310px; margin-right: 10px;">
+        <div class="swiper-zoom-container">
+          <img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2969&amp;q=80" draggable="false" ondragstart="return false;">
+        </div>
+      </div>
+      <div class="swiper-slide" style="width: 1310px; margin-right: 10px;">
+        <div class="swiper-zoom-container">
+          <img src="https://images.unsplash.com/photo-1642336011721-9dd962c38fb4?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=3164&amp;q=80" draggable="false" ondragstart="return false;">
+        </div>
+      </div>
+      <div class="swiper-slide" style="width: 1310px; margin-right: 10px;">
+        <div class="swiper-zoom-container">
+          <img src="https://images.unsplash.com/photo-1642339572217-ae98faf72127?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2888&amp;q=80" draggable="false" ondragstart="return false;">
+        </div>
+      </div>
+      <div class="swiper-slide" style="width: 1310px; margin-right: 10px;">
+        <div class="swiper-zoom-container">
+          <img src="https://images.unsplash.com/photo-1642286423481-6fa838052bfb?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2912&amp;q=80" draggable="false" ondragstart="return false;">
+        </div>
+      </div>
+      <div class="swiper-slide" style="width: 1310px; margin-right: 10px;">
+        <div class="swiper-zoom-container">
+          <img src="https://images.unsplash.com/photo-1593642634524-b40b5baae6bb?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2064&amp;q=80" draggable="false" ondragstart="return false;">
+        </div>
+      </div>
+      <div class="swiper-slide" style="width: 1310px; margin-right: 10px;">
+        <div class="swiper-zoom-container">
+          <img src="https://images.unsplash.com/photo-1642270538682-2e97f1d5f4bf?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=3088&amp;q=80" draggable="false" ondragstart="return false;">
+        </div>
+      </div>
+    </div>
+    <div class="swiper-button-next swiper-button-white">
+      <svg fill="#FFFFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path>
+      </svg>
+    </div>
+    <div class="swiper-button-prev swiper-button-white">
+      <svg fill="#FFFFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path>
+      </svg>
+    </div>
+    <div class="gallery-nav">
+      <div class="swiper-pagination swiper-pagination-fraction"><span class="swiper-pagination-current">5</span> / <span class="swiper-pagination-total">12</span></div>
+      <ul class="gallery-menu">
+        <li class="zoom">
+          <svg class="zoom-icon-zoom-in" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+            <path d="M0 0h24v24H0V0z" fill="none"></path>
+            <path d="M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z"></path>
+          </svg>
+          <svg class="zoom-icon-zoom-out" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 0h24v24H0V0z" fill="none"></path>
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM7 9h5v1H7z"></path>
+          </svg>
+        </li>
+        <li class="fullscreen">
+          <svg class="fs-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 0h24v24H0z" fill="none"></path>
+            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"></path>
+          </svg>
+          <svg class="fs-icon-exit" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 0h24v24H0z" fill="none"></path>
+            <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"></path>
+          </svg>
+        </li>
+        <li class="close">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+            <path d="M0 0h24v24H0z" fill="none"></path>
+          </svg>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.0/js/swiper.min.js"></script>
+      <script id="rendered-js">
+$(document).ready(function () {
+  // --- VARIABLES ---
+  var swiperSide = new Swiper('.product-photos-side .swiper-container', {
+    direction: 'horizontal',
+    centeredSlides: true,
+    spaceBetween: 30,
+    slidesPerView: 'auto',
+    touchRatio: 0.2,
+    slideToClickedSlide: true });
+
+  var swiperProduct = new Swiper('.product-photo-main .swiper-container', {
+    direction: 'horizontal',
+    pagination: '.swiper-pagination',
+    paginationClickable: true
+    // keyboardControl: true,
+  });
+  var galleryTop = new Swiper('.product-gallery-full-screen .gallery-top', {
+    nextButton: '.swiper-button-next',
+    prevButton: '.swiper-button-prev',
+    pagination: '.swiper-pagination',
+    paginationType: 'fraction',
+    spaceBetween: 10,
+    keyboardControl: true,
+    noSwiping: true,
+    zoom: true });
+
+  swiperSide.params.control = swiperProduct || galleryTop;
+  swiperProduct.params.control = swiperSide || galleryTop;
+  galleryTop.params.control = swiperProduct || swiperSide;
+
+  var galleryOpen = false,
+  fullscreen = false,
+  fsTrigger = $('.gallery-nav .fullscreen')[0],
+  fsGallery = $('.product-gallery-full-screen')[0],
+  fsFunction = fsGallery.requestFullscreen;
+  // browser support check
+  if (!fsFunction) {
+    ['webkitRequestFullScreen',
+    'mozRequestFullscreen',
+    'msRequestFullScreen'].
+    forEach(function (req) {
+      fsFunction = fsFunction || fsGallery[req];
+    });
+  }
+
+  // --- FUNCTIONS ---
+  function openImageGallery(slide) {
+    galleryOpen = true;
+    var galleryX = $('.product-photo-main').offset().left,
+    galleryY = $('.product-photo-main').offset().top,
+    galleryHeight = $('.product-photo-main').height(),
+    galleryWidth = $('.product-photo-main').width(),
+    activeIndex = slide.index(),
+    indexes = $('.product-photo-main').find('.swiper-slide').length;
+    $('body').css('overflow', 'hidden');
+    $('.main, .product-gallery-full-screen').css('overflow-y', 'scroll');
+    $('.product-gallery-full-screen').addClass('opened');
+    galleryTop.activeIndex = activeIndex;
+    galleryTop.onResize();
+  }
+
+  function goFs() {
+    fullscreen = true;
+    $('.product-gallery-full-screen').css('overflow-y', 'auto');
+    $('.fullscreen').addClass('leavefs');
+    fsFunction.call(fsGallery);
+  }
+
+  function leaveFs() {
+    fullscreen = false;
+    $('.product-gallery-full-screen').css('overflow-y', 'scroll');
+    $('.fullscreen').removeClass('leavefs');
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  }
+
+  function closeImageGallery() {
+    // if(zoomed) {
+    //   zoom($('.product-gallery-full-screen .swiper-slide-active img'));
+    // }
+    $('body').css('overflow', 'auto');
+    $('.main, .product-gallery-full-screen').css('overflow-y', 'auto');
+    galleryOpen = false;
+    leaveFs();
+    $('.product-gallery-full-screen').removeClass('opened');
+  }
+
+  // --- EVENTS ---
+  // open the large image gallery
+  $('.product-photo-main .swiper-slide').on('click touch', function () {
+    var slide = $(this);
+    openImageGallery(slide);
+  });
+  // close the large image gallery
+  $('.gallery-nav .close').on('click touch', function () {
+    closeImageGallery();
+  });
+  // zoom in / out
+  $('.zoom').on('click touch', function () {
+    // zoom
+  });
+  // fullscreen toggle
+  $(fsTrigger).on('click touch', function () {
+    if (fullscreen) {
+      leaveFs();
+    } else {
+      goFs();
+    }
+  });
+
+  // keyboard controls
+  $(document).on('keydown', function (e) {
+    e.preventDefault();
+    var code = e.keyCode || e.which;
+    // open the large image gallery
+    if (code == 13 && !galleryOpen) {
+      var slide = $('.product-photo-main .swiper-slide.swiper-slide-active');
+      openImageGallery(slide);
+    }
+    // close the large image gallery
+    if (code == 27 && galleryOpen) {
+      closeImageGallery();
+    }
+    if (code == 122) {
+      if (galleryOpen) {
+        if (fullscreen) {
+          leaveFs();
+        } else {
+          goFs();
+        }
+      }
+    }
+  });
+
+  $(window).on('resize', function () {
+    galleryTop.onResize();
+    swiperSide.onResize();
+    swiperProduct.onResize();
+  });
+});
+//# sourceURL=pen.js
+    </script>
+
+  
+
+
+
+</body></html>
